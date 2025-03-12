@@ -62,7 +62,7 @@ export const CustomerList: React.FC = () => {
             {searchQuery ? 'No customers found matching your search.' : 'No customers yet.'}
           </p>
         </div> : <div className="space-y-4">
-          {filteredCustomers.map(customer => <CustomerCard key={customer.id} customer={customer} onClick={() => navigate(`/customers/${customer.id}/edit`)} />)}
+          {filteredCustomers.map(customer => <CustomerCard key={customer.id} customer={customer} onClick={() => navigate(`/customers/${customer.id}`)} />)}
         </div>}
     </div>;
 };

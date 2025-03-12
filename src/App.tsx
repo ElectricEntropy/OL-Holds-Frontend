@@ -5,6 +5,7 @@ import { Toaster } from 'sonner';
 import { Navbar } from './components/Navbar';
 import { CustomerList } from './components/customers/CustomerList';
 import { CustomerForm } from './components/customers/CustomerForm';
+import { CustomerDetails } from './components/customers/CustomerDetails';
 const queryClient = new QueryClient();
 export function App() {
   return <QueryClientProvider client={queryClient}>
@@ -15,6 +16,7 @@ export function App() {
             <Routes>
               <Route path="/" element={<CustomerList />} />
               <Route path="/customers/new" element={<CustomerForm />} />
+              <Route path="/customers/:id" element={<CustomerDetails />} />
               <Route path="/customers/:id/edit" element={<CustomerForm />} />
             </Routes>
           </main>
