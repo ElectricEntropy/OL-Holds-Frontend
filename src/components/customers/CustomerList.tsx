@@ -10,8 +10,19 @@ const fetchCustomers = async (): Promise<Customer[]> => {
   if (!response.ok) {
     throw new Error('Failed to fetch customers');
   }
-  return response.json();
+  let dummyData:Customer[] = [{
+      id: "1",
+      firstName: "Jared",
+      lastName: "Colburn",
+      email: "email@email",
+      company: "Yup",
+      phoneNumber: "615-852-9712",
+      storeCredit: 15
+  }]
+    return dummyData;
+  //return response.json();
 };
+
 export const CustomerList: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');

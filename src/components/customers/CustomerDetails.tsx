@@ -7,7 +7,17 @@ import { PullListManager } from './pull-list/PullListManager';
 const fetchCustomer = async (id: string): Promise<Customer> => {
   const response = await fetch(`/api/customers/${id}`);
   if (!response.ok) throw new Error('Failed to fetch customer');
-  return response.json();
+  let dummyData:Customer = {
+    id: "1",
+    firstName: "Jared",
+    lastName: "Colburn",
+    email: "email@email",
+    company: "Yup",
+    phoneNumber: "615-852-9712",
+    storeCredit: 15
+}
+return dummyData;
+  //return response.json();
 };
 export const CustomerDetails: React.FC = () => {
   const {
