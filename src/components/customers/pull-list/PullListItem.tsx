@@ -1,8 +1,9 @@
 import React from 'react';
 import { Loader2Icon, TrashIcon } from 'lucide-react';
-import { PullListItem as PullListItemType } from '../../../types/comic';
+import { Comic } from '../../../types/comic';
+
 interface PullListItemProps {
-  comic: PullListItemType;
+  comic: Comic;
   onRemove: () => void;
   isRemoving: boolean;
 }
@@ -13,10 +14,10 @@ export const PullListItem: React.FC<PullListItemProps> = ({
 }) => {
   return <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
       <div>
-        <h4 className="font-medium text-gray-900">{comic.title}</h4>
+        <h4 className="font-medium text-gray-900">{comic.title} {comic.issue_number}</h4>
         <p className="text-sm text-gray-500">
           {comic.publisher}
-          {comic.isCustom && ' (Custom)'}
+          {comic.is_custom && ' (Custom)'}
         </p>
       </div>
       <button onClick={onRemove} disabled={isRemoving} className="p-1 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">

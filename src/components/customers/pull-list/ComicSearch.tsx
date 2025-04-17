@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { SearchIcon } from 'lucide-react';
-import { Comic, PullListItem } from '../../../types/comic';
+import { Comic } from '../../../types/comic';
+import { Pull } from '../../../types/pull';
 interface ComicSearchProps {
   comics: Comic[];
   onSelect: (comic: Comic) => void;
   disabled: boolean;
-  existingPullList: PullListItem[];
+  existingPullList: Pull[];
 }
 export const ComicSearch: React.FC<ComicSearchProps> = ({
   comics,
@@ -17,7 +18,7 @@ export const ComicSearch: React.FC<ComicSearchProps> = ({
   const filteredComics = useMemo(() => {
     if (!query) return [];
     const search = query.toLowerCase();
-    const existingIds = new Set(existingPullList.map(comic => comic.id));
+    const existingIds = new Set(existingPullList.map(pull => pull.comic_id));
     return comics.filter(comic => !existingIds.has(comic.id) && (comic.title.toLowerCase().includes(search) || comic.publisher.toLowerCase().includes(search))).slice(0, 5);
   }, [comics, query, existingPullList]);
   return <div className="relative">
@@ -34,7 +35,7 @@ export const ComicSearch: React.FC<ComicSearchProps> = ({
           setQuery('');
         }}>
                 <div className="flex justify-between">
-                  <p className="font-medium text-gray-900">{comic.title}</p>
+                  <p className="font-medium text-gray-900">{comic.title} {comic.issue_number}</p>
                   <p className="text-sm text-gray-500">{comic.publisher}</p>
                 </div>
               </li>)}

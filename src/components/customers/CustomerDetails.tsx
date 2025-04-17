@@ -7,17 +7,20 @@ import { PullListManager } from './pull-list/PullListManager';
 const fetchCustomer = async (id: string): Promise<Customer> => {
   const response = await fetch(`/api/customers/${id}`);
   if (!response.ok) throw new Error('Failed to fetch customer');
-  let dummyData:Customer = {
-    id: "1",
-    firstName: "Jared",
-    lastName: "Colburn",
-    email: "email@email",
-    company: "Yup",
-    phoneNumber: "615-852-9712",
-    storeCredit: 15
-}
-return dummyData;
-  //return response.json();
+/*   let dummyData:Customer = {
+      id: "1",
+      first_name: "Jared",
+      last_name: "Colburn",
+      phone_number: "615-852-9712",
+      email: "email@email",
+      birth_date: "01/02/1970",
+      comic_discount: 3,
+      //company: "Yup",
+      store_credit: 15,
+      notes: "A test"
+  }
+return dummyData; */
+  return response.json();
 };
 export const CustomerDetails: React.FC = () => {
   const {
@@ -50,7 +53,7 @@ export const CustomerDetails: React.FC = () => {
             Back to Customers
           </button>
           <h1 className="text-2xl font-bold text-gray-900">
-            {customer.firstName} {customer.lastName}
+            {customer.first_name} {customer.last_name}
           </h1>
           <p className="text-gray-500">{customer.email}</p>
         </div>
@@ -60,23 +63,39 @@ export const CustomerDetails: React.FC = () => {
         </button>
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        {/* <div className="bg-white p-4 rounded-lg border border-gray-200">
           <h3 className="text-sm font-medium text-gray-500">Company</h3>
           <p className="mt-1 text-gray-900">{customer.company}</p>
-        </div>
+        </div> */}
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <h3 className="text-sm font-medium text-gray-500">Phone Number</h3>
-          <p className="mt-1 text-gray-900">{customer.phoneNumber}</p>
+          <p className="mt-1 text-gray-900">{customer.phone_number}</p>
+        </div>
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <h3 className="text-sm font-medium text-gray-500">Birth Date</h3>
+          <p className="mt-1 text-gray-900">{customer.birth_date}</p>
         </div>
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <h3 className="text-sm font-medium text-gray-500">Store Credit</h3>
           <p className="mt-1 text-gray-900">
-            ${customer.storeCredit.toFixed(2)}
+            ${customer.store_credit/* .toFixed(2) */}
+          </p>
+        </div>
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <h3 className="text-sm font-medium text-gray-500">Comic Discount</h3>
+          <p className="mt-1 text-gray-900">
+            {customer.comic_discount}%
           </p>
         </div>
       </div>
+      <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <h3 className="text-sm font-medium text-gray-500">Notes</h3>
+        <p className="mt-1 text-gray-900">
+          {customer.notes}
+        </p>
+      </div>
       <div className="bg-white p-6 rounded-lg border border-gray-200">
-        <PullListManager customerId={id!} />
+        <PullListManager customer_id={id!} />
       </div>
     </div>;
 };

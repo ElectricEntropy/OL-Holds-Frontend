@@ -28,6 +28,11 @@ export const Navbar: React.FC = () => {
                 Customers
               </Link>
             </div>
+            <div className="space-x-4">
+              <Link to="/comics" className={linkClass('/')}>
+                Comics
+              </Link>
+            </div>
           </div>
           <div className="flex items-center sm:hidden">
             <button onClick={() => setIsOpen(!isOpen)} className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-indigo-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-expanded="false">
