@@ -4,8 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowLeftIcon, Loader2Icon, PencilIcon } from 'lucide-react';
 import { Customer } from '../../types/customer';
 import { PullListManager } from './pull-list/PullListManager';
+const url_prefix = "http://localhost:5000"
+//const url_prefix = ""
 const fetchCustomer = async (id: string): Promise<Customer> => {
-  const response = await fetch(`/api/customers/${id}`);
+  const response = await fetch(`${url_prefix}/api/customers/${id}`);
   if (!response.ok) throw new Error('Failed to fetch customer');
 /*   let dummyData:Customer = {
       id: "1",
@@ -57,7 +59,7 @@ export const CustomerDetails: React.FC = () => {
           </h1>
           <p className="text-gray-500">{customer.email}</p>
         </div>
-        <button onClick={() => navigate(`/customers/${id}/edit`)} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <button onClick={() => navigate(`/customers/${id}/edit`, { state: customer})} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           <PencilIcon className="h-4 w-4 mr-2" />
           Edit Customer
         </button>

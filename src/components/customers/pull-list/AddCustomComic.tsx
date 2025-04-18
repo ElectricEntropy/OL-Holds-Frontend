@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2Icon } from 'lucide-react';
 import { Comic, ComicFormData } from '../../../types/comic';
+const url_prefix = "http://localhost:5000"
+//const url_prefix = ""
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
   issue_number: z.coerce.number(),
@@ -17,7 +19,7 @@ interface AddCustomComicProps {
   isAdding: boolean;
 }
 const createComic = async (data: ComicFormData): Promise<Comic> => {
-  const response = await fetch('/api/comics', {
+  const response = await fetch(`${url_prefix}/api/comics`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

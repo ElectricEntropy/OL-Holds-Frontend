@@ -7,16 +7,18 @@ import { ComicSearch } from './ComicSearch';
 import { PullListItem as PullListItemComponent } from './PullListItem';
 import { AddCustomComic } from './AddCustomComic';
 import { toast } from 'sonner';
+const url_prefix = "http://localhost:5000"
+//const url_prefix = ""
 interface PullListManagerProps {
   customer_id: string;
 }
 const fetchComics = async (): Promise<Comic[]> => {
-  const response = await fetch('/api/comics');
+  const response = await fetch(`${url_prefix}/api/comics`);
   if (!response.ok) throw new Error('Failed to fetch comics');
   return response.json();
 };
 const fetchCustomerPullList = async (customerId: string): Promise<Pull[]> => {
-  const response = await fetch(`/api/customers/${customerId}/pulls`);
+  const response = await fetch(`${url_prefix}/api/customers/${customerId}/pulls`);
   if (!response.ok) throw new Error('Failed to fetch pull list');
   return response.json();
 };
@@ -48,7 +50,7 @@ export const PullListManager: React.FC<PullListManagerProps> = ({
   });
   const addToListMutation = useMutation({
     mutationFn: async (comic: Comic) => {
-      const response = await fetch(`/api/customers/${customer_id}/pulls`, {
+      const response = await fetch(`${url_prefix}/api/customers/${customer_id}/pulls`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -70,7 +72,7 @@ export const PullListManager: React.FC<PullListManagerProps> = ({
   });
   const removeFromListMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/pulls/${id}`, {
+      const response = await fetch(`${url_prefix}/api/pulls/${id}`, {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Failed to remove comic from pull list');

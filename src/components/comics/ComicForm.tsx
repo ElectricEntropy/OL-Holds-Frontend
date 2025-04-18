@@ -3,19 +3,39 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Loader2Icon } from 'lucide-react';
 import type { Comic, ComicFormData } from '../../types/comic';
+const url_prefix = "http://localhost:5000"
+//const url_prefix = ""
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
   issue_number: z.coerce.number(),
   publisher: z.string().min(1, 'Publisher is required'),
   is_custom: z.boolean()
 });
+const form_prefilled_data = {
+  comic_title: "Visible Default",
+  issue_number: 0,
+  publisher: "",
+  is_custom: false,
+};
+const handlePreviousData = (existingData: ComicFormData) => {
+  //existingData.publication_date = existingData.publication_date.split("T")[0]
+  Object.assign(form_prefilled_data, existingData);
+};
+const resetData = () => {
+  Object.assign(form_prefilled_data, {
+    comic_title: "Visible Default",
+    issue_number: 0,
+    publisher: "",
+    is_custom: false,
+  })
+}
 type FormData = z.infer<typeof schema>;
 const createComic = async (data: ComicFormData): Promise<Comic> => {
-  const response = await fetch('/api/comics', {
+  const response = await fetch(`${url_prefix}/api/comics`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -32,7 +52,7 @@ const updateComic = async ({
   id: string;
   data: ComicFormData;
 }): Promise<Comic> => {
-  const response = await fetch(`/api/comics/${id}`, {
+  const response = await fetch(`${url_prefix}/api/comics/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
@@ -47,6 +67,8 @@ export const ComicForm: React.FC = () => {
     id
   } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  location.state ? handlePreviousData(location.state) : resetData();
   const queryClient = useQueryClient();
   const isEditing = Boolean(id);
   const {
@@ -56,6 +78,7 @@ export const ComicForm: React.FC = () => {
       errors
     }
   } = useForm<FormData>({
+    defaultValues: form_prefilled_data,
     resolver: zodResolver(schema)
   });
   const mutation = useMutation({

@@ -3,10 +3,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ArrowLeftIcon, Loader2Icon } from 'lucide-react';
 import type { Customer, CustomerFormData } from '../../types/customer';
+const url_prefix = "http://localhost:5000"
+//const url_prefix = ""
 const schema = z.object({
   first_name: z.string().min(1, 'First name is required'),
   last_name: z.string().min(1, 'Last name is required'),
@@ -22,9 +24,33 @@ const schema = z.object({
     .max(100, 'Discount cannot exceed 100%'),
   notes: z.string()
 });
+const form_prefilled_data = {
+  first_name: "",
+  last_name: "",
+  email: "",
+  birth_date: "",
+  phone_number: "",
+  store_credit: 0,
+  comic_discount: 0
+};
+const handlePreviousData = (existingData: CustomerFormData) => {
+  existingData.birth_date = existingData.birth_date.split("T")[0]
+  Object.assign(form_prefilled_data, existingData);
+};
+const resetData = () => {
+  Object.assign(form_prefilled_data, {
+    first_name: "",
+    last_name: "",
+    email: "",
+    birth_date: "",
+    phone_number: "",
+    store_credit: 0,
+    comic_discount: 0
+  })
+}
 type FormData = z.infer<typeof schema>;
 const createCustomer = async (data: CustomerFormData): Promise<Customer> => {
-  const response = await fetch('/api/customers', {
+  const response = await fetch(`${url_prefix}/api/customers`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -41,7 +67,7 @@ const updateCustomer = async ({
   id: string;
   data: CustomerFormData;
 }): Promise<Customer> => {
-  const response = await fetch(`/api/customers/${id}`, {
+  const response = await fetch(`${url_prefix}/api/customers/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
@@ -56,6 +82,8 @@ export const CustomerForm: React.FC = () => {
     id
   } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  location.state ? handlePreviousData(location.state) : resetData();
   const queryClient = useQueryClient();
   const isEditing = Boolean(id);
   const {
@@ -65,6 +93,7 @@ export const CustomerForm: React.FC = () => {
       errors
     }
   } = useForm<FormData>({
+    defaultValues: form_prefilled_data,
     resolver: zodResolver(schema)
   });
   const mutation = useMutation({

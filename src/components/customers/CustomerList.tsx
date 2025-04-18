@@ -5,8 +5,11 @@ import { AlertCircleIcon, PlusIcon } from 'lucide-react';
 import { CustomerCard } from './CustomerCard';
 import { SearchBar } from './SearchBar';
 import { Customer } from '../../types/customer';
+
+const url_prefix = "http://localhost:5000"
+//const url_prefix = ""
 const fetchCustomers = async (): Promise<Customer[]> => {
-  const response = await fetch('/api/customers');
+  const response = await fetch(`${url_prefix}/api/customers`);
   if (!response.ok) {
     throw new Error('Failed to fetch customers');
   }

@@ -5,8 +5,10 @@ import { AlertCircleIcon, PlusIcon } from 'lucide-react';
 import { ComicCard } from './ComicCard';
 import { SearchBar } from './SearchBar';
 import { Comic } from '../../types/comic';
+const url_prefix = "http://localhost:5000"
+//const url_prefix = ""
 const fetchComics = async (): Promise<Comic[]> => {
-  const response = await fetch('/api/comics');
+  const response = await fetch(`${url_prefix}/api/comics`);
   if (!response.ok) {
     throw new Error('Failed to fetch comics');
   }
