@@ -1,13 +1,8 @@
 export interface Comic {
   id: string;
   title: string;
+  issue_number: number;
   publisher: string;
-  isCustom?: boolean;
+  is_custom?: boolean;
 }
-export interface PullListItem extends Comic {
-  addedAt: string;
-}
-export interface CustomerPullList {
-  customerId: string;
-  comics: PullListItem[];
-}
+export type ComicFormData = Omit<Comic, 'id'>;

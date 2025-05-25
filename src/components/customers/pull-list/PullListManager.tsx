@@ -1,26 +1,35 @@
 import React, { useState, Component } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AlertCircleIcon, Loader2Icon, PlusIcon } from 'lucide-react';
-import { Comic, PullListItem } from '../../../types/comic';
+import { Comic } from '../../../types/comic';
+import { Pull } from '../../../types/pull';
 import { ComicSearch } from './ComicSearch';
 import { PullListItem as PullListItemComponent } from './PullListItem';
 import { AddCustomComic } from './AddCustomComic';
 import { toast } from 'sonner';
+const url_prefix = "http://localhost:5000"
+//const url_prefix = ""
 interface PullListManagerProps {
-  customerId: string;
+  customer_id: string;
 }
 const fetchComics = async (): Promise<Comic[]> => {
-  const response = await fetch('/api/comics');
+  const response = await fetch(`${url_prefix}/api/comics`);
   if (!response.ok) throw new Error('Failed to fetch comics');
   return response.json();
 };
-const fetchCustomerPullList = async (customerId: string): Promise<PullListItem[]> => {
-  const response = await fetch(`/api/customers/${customerId}/pull-list`);
+const fetchCustomerPullList = async (customerId: string): Promise<Pull[]> => {
+  const response = await fetch(`${url_prefix}/api/customers/${customerId}/pulls`);
   if (!response.ok) throw new Error('Failed to fetch pull list');
   return response.json();
 };
+const errComic: Comic = {
+  id: '',
+  title: 'Refresh to view newly added comic',
+  issue_number: 0,
+  publisher: ''
+};
 export const PullListManager: React.FC<PullListManagerProps> = ({
-  customerId
+  customer_id
 }) => {
   const [isAddingCustom, setIsAddingCustom] = useState(false);
   const queryClient = useQueryClient();
@@ -36,12 +45,12 @@ export const PullListManager: React.FC<PullListManagerProps> = ({
     isLoading: isLoadingPullList,
     error
   } = useQuery({
-    queryKey: ['pullList', customerId],
-    queryFn: () => fetchCustomerPullList(customerId)
+    queryKey: ['pullList', customer_id],
+    queryFn: () => fetchCustomerPullList(customer_id)
   });
   const addToListMutation = useMutation({
     mutationFn: async (comic: Comic) => {
-      const response = await fetch(`/api/customers/${customerId}/pull-list`, {
+      const response = await fetch(`${url_prefix}/api/customers/${customer_id}/pulls`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -53,7 +62,7 @@ export const PullListManager: React.FC<PullListManagerProps> = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['pullList', customerId]
+        queryKey: ['pullList', customer_id]
       });
       toast.success('Comic added to pull list');
     },
@@ -62,15 +71,15 @@ export const PullListManager: React.FC<PullListManagerProps> = ({
     }
   });
   const removeFromListMutation = useMutation({
-    mutationFn: async (comicId: string) => {
-      const response = await fetch(`/api/customers/${customerId}/pull-list/${comicId}`, {
+    mutationFn: async (id: string) => {
+      const response = await fetch(`${url_prefix}/api/pulls/${id}`, {
         method: 'DELETE'
       });
       if (!response.ok) throw new Error('Failed to remove comic from pull list');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['pullList', customerId]
+        queryKey: ['pullList', customer_id]
       });
       toast.success('Comic removed from pull list');
     },
@@ -110,7 +119,13 @@ export const PullListManager: React.FC<PullListManagerProps> = ({
           </div> : pullList?.length === 0 ? <p className="text-center py-8 text-gray-500">
             No comics in pull list yet.
           </p> : <div className="space-y-3">
-            {pullList?.map(comic => <PullListItemComponent key={comic.id} comic={comic} onRemove={() => handleRemoveComic(comic.id)} isRemoving={removeFromListMutation.isPending} />)}
+            {pullList?.map(pull => 
+              <PullListItemComponent 
+                key={pull.id} 
+                comic={comics &&comics.find(comic => pull.comic_id === comic.id) || errComic} 
+                onRemove={() => handleRemoveComic(pull.id)} 
+                isRemoving={removeFromListMutation.isPending} 
+              />)}
           </div>}
       </div>
     </div>;
