@@ -5,14 +5,104 @@ import { AlertCircleIcon, PlusIcon } from 'lucide-react';
 import { ComicCard } from './ComicCard';
 import { SearchBar } from './SearchBar';
 import { Comic } from '../../types/comic';
+import { Customer } from '../../types/customer';
+import { Pull } from '../../types/pull';
+import { CustomerList } from '../customers/CustomerList';
+import * as FileSaver from 'file-saver';
+import * as ExcelJS from 'exceljs';
+
 const url_prefix = "http://localhost:5000"
 //const url_prefix = ""
+const fetchCustomers = async (): Promise<Customer[]> => {
+  const response = await fetch(`${url_prefix}/api/customers`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch customers');
+  }
+  return response.json();
+};
+
 const fetchComics = async (): Promise<Comic[]> => {
   const response = await fetch(`${url_prefix}/api/comics`);
   if (!response.ok) {
     throw new Error('Failed to fetch comics');
   }
   return response.json();
+};
+
+const fetchPulls = async (): Promise<Pull[]> => {
+  const response = await fetch(`${url_prefix}/api/pulls`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch pulls');
+  }
+  return response.json();
+};
+
+const downloadComicPullsReport = async (comicData: Comic[]) => {
+  const customerData = await fetchCustomers();
+
+/*   if (customerData.length === 0) {
+    console.error('No customer data found')
+    return;
+  } */
+
+/*   const comics = await fetchComics();
+  if (comics.length === 0) {
+    console.error('No comic data found')
+    return;
+  } */
+
+  const pulls = await fetchPulls();
+/*   if (pulls.length === 0) {
+    console.error('No pulls found')
+    return;
+  } */
+
+  const pullDict: Object[] = []
+  comicData.forEach((comic: Comic) => {
+
+    let pullCustomerIds: string[] = []
+    pulls.forEach(pull => {
+      if (pull.comic_id === comic.id) {
+        pullCustomerIds.push(pull.customer_id)
+      }
+    })
+
+    const holds: string[] = pullCustomerIds.map((customer_id: string) => {
+      const customer = customerData.find(customer => customer.id === customer_id)
+      return `${customer?.first_name} ${customer?.last_name}`
+    })
+
+    pullDict.push({
+      title: comic.title,
+      issue_number: comic.issue_number,
+      numberOfHolds: pullCustomerIds.length,
+      listOfHolds: holds.join(", ")
+    })
+  })
+
+  //generate excel file
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Sheet1');
+  worksheet.columns = [
+    { header: 'Comic Title', key: 'title' },
+    { header: 'Issue #', key: 'issue_number' },
+    { header: 'Number of Holds', key: 'numberOfHolds' },
+    { header: 'Holds', key: 'listOfHolds' }
+  ];
+  pullDict.forEach(row => {
+    worksheet.addRow(row);
+  })
+
+  workbook.xlsx.writeBuffer()
+    .then((data) => {
+      const blob = new Blob([data], { type: "text/plain;charset=utf-8" });
+      const fileName = `${new Date().toLocaleDateString("en-US", {timeZone: "America/Chicago"})}-ComicHoldsReport.xlsx`;
+      FileSaver.saveAs(blob, fileName);
+      console.log('Excel file generated successfully!');
+    })
+    .catch((error) => {
+      console.error('Error generating Excel file:', error);
+    });
 };
 
 export const ComicList: React.FC = () => {
@@ -26,8 +116,11 @@ export const ComicList: React.FC = () => {
     queryKey: ['Comics'],
     queryFn: fetchComics
   });
+  const [comicData, setComicData] = useState(data || []);
+
   const filteredComics = useMemo(() => {
     if (!data) return [];
+    setComicData(data);
     if (!searchQuery) return data;
     const query = searchQuery.toLowerCase();
     return data.filter(comic => {
@@ -45,6 +138,10 @@ export const ComicList: React.FC = () => {
   return <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Comics</h1>
+        <button onClick={() => { downloadComicPullsReport(comicData) }} className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+          <PlusIcon className="h-5 w-5 mr-2" />
+          Download Comic Report
+        </button>
         <button onClick={() => navigate('/comics/new')} className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           <PlusIcon className="h-5 w-5 mr-2" />
           Add Comic
