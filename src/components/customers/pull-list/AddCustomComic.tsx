@@ -10,7 +10,9 @@ const schema = z.object({
   title: z.string().min(1, 'Title is required'),
   issue_number: z.coerce.number(),
   publisher: z.string().min(1, 'Publisher is required'),
-  is_custom: z.boolean().default(true)
+  distributor: z.string(),
+  release_date: z.string().date('Invalid date'),
+  is_custom: z.boolean()
 });
 type FormData = z.infer<typeof schema>;
 interface AddCustomComicProps {

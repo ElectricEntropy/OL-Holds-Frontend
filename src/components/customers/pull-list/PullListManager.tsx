@@ -26,7 +26,9 @@ const errComic: Comic = {
   id: '',
   title: 'Refresh to view newly added comic',
   issue_number: 0,
-  publisher: ''
+  publisher: '',
+  distributor: '',
+  release_date: '',
 };
 export const PullListManager: React.FC<PullListManagerProps> = ({
   customer_id
