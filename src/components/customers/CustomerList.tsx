@@ -43,8 +43,8 @@ const downloadCustomerPullsReport = async (customerData: Customer[]) => {
     return;
   }
 
-  const comics = await fetchComics();
-  if (comics.length === 0) {
+  const comicData = await fetchComics();
+  if (comicData.length === 0) {
     console.error('No comic data found')
     return;
   }
@@ -56,25 +56,19 @@ const downloadCustomerPullsReport = async (customerData: Customer[]) => {
   } */
 
   const pullDict: Object[] = []
-  customerData.forEach((customer: Customer) => {
+  pulls.forEach((pull: Pull) => {
 
-    let pullComicIds: string[] = []
-    pulls.forEach(pull => {
-      if (pull.customer_id === customer.id) {
-        pullComicIds.push(pull.comic_id)
-      }
-    })
-
-    const holds: string[] = pullComicIds.map((comic_id: string) => {
-      const comic = comics.find(comic => comic.id === comic_id)
-      return `${comic?.title} #${comic?.issue_number}`
-    })
+    const customer = customerData.find((customer) => customer.id === pull.customer_id)
+    const comic = comicData.find((comic) => comic.id === pull.comic_id)
 
     pullDict.push({
-      first_name: customer.first_name,
-      last_name: customer.last_name,
-      numberOfHolds: pullComicIds.length,
-      listOfHolds: holds.join(", ")
+      full_name: `${customer?.first_name} ${customer?.last_name}`,
+      comic_title: comic?.title,
+      issue_no: comic?.issue_number,
+      publisher: comic?.publisher,
+      distributor: comic?.distributor,
+      release_date: new Date(comic?.release_date || "").toLocaleDateString("en-US", {timeZone: "America/Chicago"}),
+      numberOfHolds: pull.quantity,
     })
   })
 
@@ -82,10 +76,13 @@ const downloadCustomerPullsReport = async (customerData: Customer[]) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Sheet1');
   worksheet.columns = [
-    { header: 'First Name', key: 'first_name' },
-    { header: 'Last Name', key: 'last_name' },
-    { header: 'Number of Holds', key: 'numberOfHolds' },
-    { header: 'Holds', key: 'listOfHolds' }
+    { header: 'Full Name', key: 'full_name' },
+    { header: 'Book Title', key: 'comic_title' },
+    { header: 'Issue Number', key: 'issue_no' },
+    { header: 'Publisher', key: 'publisher' },
+    { header: 'Distributor', key: 'distributor' },
+    { header: 'Release Date', key: 'release_date' },
+    { header: 'Quantity', key: 'numberOfHolds' },
   ];
   pullDict.forEach(row => {
     worksheet.addRow(row);

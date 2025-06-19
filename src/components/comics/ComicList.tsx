@@ -58,25 +58,19 @@ const downloadComicPullsReport = async (comicData: Comic[]) => {
   } */
 
   const pullDict: Object[] = []
-  comicData.forEach((comic: Comic) => {
+  pulls.forEach((pull: Pull) => {
 
-    let pullCustomerIds: string[] = []
-    pulls.forEach(pull => {
-      if (pull.comic_id === comic.id) {
-        pullCustomerIds.push(pull.customer_id)
-      }
-    })
-
-    const holds: string[] = pullCustomerIds.map((customer_id: string) => {
-      const customer = customerData.find(customer => customer.id === customer_id)
-      return `${customer?.first_name} ${customer?.last_name}`
-    })
+    const customer = customerData.find((customer) => customer.id === pull.customer_id)
+    const comic = comicData.find((comic) => comic.id === pull.comic_id)
 
     pullDict.push({
-      title: comic.title,
-      issue_number: comic.issue_number,
-      numberOfHolds: pullCustomerIds.length,
-      listOfHolds: holds.join(", ")
+      full_name: `${customer?.first_name} ${customer?.last_name}`,
+      comic_title: comic?.title,
+      issue_no: comic?.issue_number,
+      publisher: comic?.publisher,
+      distributor: comic?.distributor,
+      release_date: new Date(comic?.release_date || "").toLocaleDateString("en-US", {timeZone: "America/Chicago"}),
+      numberOfHolds: pull.quantity,
     })
   })
 
@@ -84,10 +78,13 @@ const downloadComicPullsReport = async (comicData: Comic[]) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Sheet1');
   worksheet.columns = [
-    { header: 'Comic Title', key: 'title' },
-    { header: 'Issue #', key: 'issue_number' },
-    { header: 'Number of Holds', key: 'numberOfHolds' },
-    { header: 'Holds', key: 'listOfHolds' }
+    { header: 'Full Name', key: 'full_name' },
+    { header: 'Book Title', key: 'comic_title' },
+    { header: 'Issue Number', key: 'issue_no' },
+    { header: 'Publisher', key: 'publisher' },
+    { header: 'Distributor', key: 'distributor' },
+    { header: 'Release Date', key: 'release_date' },
+    { header: 'Quantity', key: 'numberOfHolds' },
   ];
   pullDict.forEach(row => {
     worksheet.addRow(row);
