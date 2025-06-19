@@ -44,6 +44,7 @@ export const ComicDetails: React.FC = () => {
             {comic.title} {comic.issue_number}
           </h1>
           <p className="text-gray-500">{comic.publisher} {comic.is_custom ? ' (Custom)' : comic.distributor}</p>
+          <p className="text-gray-500">Release Date: {new Date(comic.release_date).toLocaleDateString("en-US", {timeZone: "America/Chicago"})}</p>
         </div>
         <button onClick={() => navigate(`/comics/${id}/edit`, { state: comic })} className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           <PencilIcon className="h-4 w-4 mr-2" />

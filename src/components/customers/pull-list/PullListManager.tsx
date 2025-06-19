@@ -89,6 +89,7 @@ export const PullListManager: React.FC<PullListManagerProps> = ({
       toast.error(`Error removing comic: ${error.message}`);
     }
   });
+
   const handleAddComic = (comic: Comic) => {
     addToListMutation.mutate(comic);
   };
@@ -124,7 +125,8 @@ export const PullListManager: React.FC<PullListManagerProps> = ({
             {pullList?.map(pull => 
               <PullListItemComponent 
                 key={pull.id} 
-                comic={comics &&comics.find(comic => pull.comic_id === comic.id) || errComic} 
+                comic={comics && comics.find(comic => pull.comic_id === comic.id) || errComic}
+                pull={pull}
                 onRemove={() => handleRemoveComic(pull.id)} 
                 isRemoving={removeFromListMutation.isPending} 
               />)}

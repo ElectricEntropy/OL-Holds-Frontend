@@ -10,7 +10,7 @@ const schema = z.object({
   title: z.string().min(1, 'Title is required'),
   issue_number: z.coerce.number(),
   publisher: z.string().min(1, 'Publisher is required'),
-  distributor: z.string(),
+  distributor: z.string().min(1, 'Distributor is required'),
   release_date: z.string().date('Invalid date'),
   is_custom: z.boolean()
 });
@@ -77,6 +77,30 @@ export const AddCustomComic: React.FC<AddCustomComicProps> = ({
         {errors.publisher && <p className="mt-1 text-sm text-red-600">
             {errors.publisher.message}
           </p>}
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Distributor
+        </label>
+        <input type="text" {...register('distributor')} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+        {errors.distributor && <p className="mt-1 text-sm text-red-600">
+            {errors.distributor.message}
+          </p>}
+      </div>
+            <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Release Date
+          </label>
+          <input type="date" {...register('release_date')} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+          {errors.release_date && <p className="mt-1 text-sm text-red-600">
+              {errors.release_date.message}
+            </p>}
+        </div>
+        <div hidden>
+          <label className="block text-sm font-medium text-gray-700">
+            Is Custom Item
+          </label>
+          <input type="checkbox" checked {...register('is_custom')} />
       </div>
       <div className="flex justify-end space-x-3">
         <button type="button" onClick={onCancel} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

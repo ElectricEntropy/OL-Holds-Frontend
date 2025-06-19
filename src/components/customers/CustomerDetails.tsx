@@ -75,7 +75,7 @@ export const CustomerDetails: React.FC = () => {
         </div>
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <h3 className="text-sm font-medium text-gray-500">Birth Date</h3>
-          <p className="mt-1 text-gray-900">{customer.birth_date}</p>
+          <p className="mt-1 text-gray-900">{new Date(customer.birth_date).toLocaleDateString("en-US", {timeZone: "America/Chicago"})}</p>
         </div>
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <h3 className="text-sm font-medium text-gray-500">Store Credit</h3>

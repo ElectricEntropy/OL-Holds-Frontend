@@ -13,7 +13,7 @@ const schema = z.object({
   title: z.string().min(1, 'Title is required'),
   issue_number: z.coerce.number(),
   publisher: z.string().min(1, 'Publisher is required'),
-  distributor: z.string(),
+  distributor: z.string().min(1, 'Distributor is required'),
   release_date: z.string().date('Invalid date'),
   is_custom: z.boolean()
 });
@@ -22,10 +22,11 @@ const form_prefilled_data = {
   issue_number: 0,
   publisher: "",
   distributor: "",
+  release_date: "",
   is_custom: false,
 };
 const handlePreviousData = (existingData: ComicFormData) => {
-  //existingData.publication_date = existingData.publication_date.split("T")[0]
+  existingData.release_date = existingData.release_date.split("T")[0]
   Object.assign(form_prefilled_data, existingData);
 };
 const resetData = () => {
